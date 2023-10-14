@@ -1,0 +1,103 @@
+---
+title: Setting up a Blog with Next.js and ContentLayer
+date: 2023-10-13
+description: A beginner-friendly guide to launching a blog using Next.js and ContentLayer, two powerful tools in the web development arsenal.
+---
+
+# Quickstart Guide: Setting Up a Blog with Next.js and ContentLayer
+
+Want to set up a new blog? With **Next.js** and **ContentLayer**, it's a breeze. Follow this step-by-step guide to get started!
+
+## Before You Jump In:
+
+-   Ensure **Node.js** and **npm/yarn** are installed on your system.
+-   Familiarity with **React** and **Next.js** is helpful but not mandatory.
+
+## Kickstart a New Next.js App
+
+Start by setting up a Next.js project:
+
+```bash
+npx create-next-app@latest --typescript --tailwind --experimental-app --eslint contentlayer-example
+cd contentlayer-example
+```
+
+### Step 2: Get ContentLayer Ready
+
+Now, we'll add some (dependencies) for ContentLayer:
+
+```bash
+npm install contentlayer next-contentlayer date-fns
+```
+
+### Step 4: Setting Up `tsconfig.json`
+
+Tweak your `tsconfig.json` or `jsconfig.json` for seamless integration:
+
+```typescript
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "contentlayer/generated": ["./.contentlayer/generated"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".contentlayer/generated"
+  ]
+}
+```
+
+### Step 5: Structure Your Blog with ContentLayer
+
+Craft a structure for your blog posts using `contentlayer.config.ts` in your project root:
+
+```typescript
+import { defineDocumentType, makeSource } from "contentlayer/source-files";
+
+export const Post = defineDocumentType(() => ({
+	name: "Post",
+	// This is the file path where your post.md or post.mdx file exist outside of src/app.
+	filePathPattern: `**/**/*.mdx`, // In my case it is `posts/post-01.mdx`
+	fields: {
+		title: { type: "string", required: true },
+		date: { type: "date", required: true },
+	},
+	computedFields: {
+		url: {
+			type: "string",
+			resolve: (post) => `/posts/${post._raw.flattenedPath}`,
+		},
+	},
+}));
+
+export default makeSource({ contentDirPath: "posts", documentTypes: [Post] });
+```
+
+you can also set the content type of your post in `contentlayer.config.ts`
+
+```typescript
+contentType: "mdx",
+```
+
+### Step 6: Time to Blog!
+
+Head over to the posts folder and begin with a file, say `post-01.mdx`:
+
+```typescript
+---
+title: first post
+date: 2023-10-14
+description: this is my first blog post.
+---
+
+// rest of you mdx content here
+```
+
+### Conclusion
+
+That's it! With these steps, you're equipped to share your knowledge and stories with the world. Remember, regularly updating your blog with quality content is key for SEO. So, keep writing and happy blogging!
